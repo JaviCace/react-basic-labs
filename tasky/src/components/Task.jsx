@@ -1,3 +1,10 @@
+const priorityColors = {
+    High: "red",
+    Medium: "orange",
+    Low: "green"
+};
+
+
 const Task = (props) => {
     
     return (
@@ -6,7 +13,9 @@ const Task = (props) => {
             <p className="title">{props.title}</p>
             <p>Due: {props.deadline}</p>
             <p className="description">{props.description}</p>
-            <p className="prior"> {props.priority}</p>
+             <p style={{ color: priorityColors[props.priority] }}>
+                Priority: {props.priority}
+            </p>
             <button className='deleteButton' onClick={props.deleteTask}>Delete</button>
             <button onClick={props.markDone} className='doneButton'>Done</button>
 
