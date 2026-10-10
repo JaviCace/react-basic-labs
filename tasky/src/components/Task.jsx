@@ -1,3 +1,17 @@
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import Chip from '@mui/material/Chip';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import DeleteIcon from '@mui/icons-material/Delete';
+
+
+
 const priorityColors = {
     High: "red",
     Medium: "orange",
@@ -8,18 +22,95 @@ const priorityColors = {
 const Task = (props) => {
     
     return (
-          <div className="card" style={{backgroundColor: props.done ? 'lightgrey' : '#5bb4c4'}}>
+          <Grid
+  key={props.id}
+  size={{ xs: 12, md: 4 }}
+>
+  <Card
+    sx={{
+      backgroundColor: props.done ? 'lightgrey' : 'lightblue',
+      padding: '20px'
+    }}
+  >
+    <CardHeader
+      title={props.title}
+      sx={{
+        backgroundColor: 'white',
+        borderRadius: '3px',
+        padding: '20px',
+        textAlign: 'center'
+      }}
+    />
 
-            <p className="title">{props.title}</p>
-            <p>Due: {props.deadline}</p>
-            <p className="description">{props.description}</p>
-             <p style={{ color: priorityColors[props.priority] }}>
-                Priority: {props.priority}
-            </p>
-            <button className='deleteButton' onClick={props.deleteTask}>Delete</button>
-            <button onClick={props.markDone} className='doneButton'>Done</button>
+    <CardContent>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'baseline',
+          mb: 2,
+          padding: '20px'
+        }}
+      >
+        <Typography
+          component="p"
+          variant="subtitle2"
+          color="text.primary"
+        >
+          Due: {props.deadline}
+        </Typography>
+      </Box>
 
-        </div>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1 }}>
+        <Chip
+          label={props.priority}
+          size="small"
+          sx={{
+            backgroundColor: priorityColors[props.priority] || 'grey',
+            color: 'white'
+          }}
+        />
+      </Box>
+
+      <Typography
+        component="p"
+        variant="subtitle1"
+        align="center"
+        sx={{ fontStyle: 'italic' }}
+      >
+        {props.description}
+      </Typography>
+    </CardContent>
+
+    <CardActions
+      sx={{
+        justifyContent: 'space-between',
+        padding: '20px'
+      }}
+    >
+      <Button
+        variant="contained"
+        size="small"
+        color="success"
+        startIcon={<CheckCircleIcon />}
+        onClick={props.markDone}
+      >
+        Done
+      </Button>
+
+      <Button
+        variant="contained"
+        size="small"
+        color="error"
+        startIcon={<DeleteIcon />}
+        onClick={props.deleteTask}
+      >
+        Delete
+      </Button>
+    </CardActions>
+  </Card>
+</Grid>
+
     )
 }
 
