@@ -1,0 +1,93 @@
+
+import express from 'express';
+import User from './userModel';
+import asyncHandler from 'express-async-handler';
+import jwt from 'jsonwebtoken';
+
+const router = express.Router();
+
+// Password validation
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+// Get all users
+router.get('/', async (req, res) => {
+    const users = await User.find();
+    res.status(200).json(users);
+});
+
+// Register or authenticate user
+router.post('/', asyncHandler(async (req, res) => {
+    try {
+        if (!req.body.username || !req.body.password) {
+            return res.status(400).json({
+                success: false,
+                msg: 'Username and password are required.'
+            });
+        }
+
+        if (req.query.action === 'register') {
+            await registerUser(req, res);
+        } else {
+            await authenticateUser(req, res);
+        }
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            success: false,
+            msg: 'Internal server error.'
+        });
+    }
+}));
+
+// Register a new user
+async function registerUser(req, res) {
+    const { password } = req.body;
+
+    if (!passwordRegex.test(password)) {
+        return res.status(400).json({
+            success: false,
+            msg: 'Password must be at least 8 characters long and include one uppercase letter, one lowercase letter, one number and one special character.'
+        });
+    }
+
+    await User.create(req.body);
+
+    res.status(201).json({
+        success: true,
+        msg: 'User successfully created.'
+    });
+}
+
+// Authenticate user
+async function authenticateUser(req, res) {
+    const user = await User.findByUserName(req.body.username);
+
+    if (!user) {
+        return res.status(401).json({
+            success: false,
+            msg: 'Authentication failed. User not found.'
+        });
+    }
+
+    const isMatch = await user.comparePassword(req.body.password);
+
+    if (isMatch) {
+        const token = jwt.sign(
+            { username: user.username },
+            process.env.SECRET
+        );
+
+        res.status(200).json({
+            success: true,
+            token: 'BEARER ' + token
+        });
+    } else {
+        res.status(401).json({
+            success: false,
+            msg: 'Wrong password.'
+        });
+    }
+}
+
+export default router;
